@@ -1,26 +1,30 @@
-import React from 'react';
+import React, {useState} from 'react';
 import logo from './logo.svg';
 import './App.css';
 
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+    const startValue = 5
+    const maxValue = 10
+    const [value, setValue] = useState(startValue)
+
+    const clickOnInc = () => {
+        if (value + 1 >= maxValue) {
+            return alert('error')
+        }
+        setValue(value + 1)
+    }
+    const clickOnReset = () => {
+        setValue(startValue)
+    }
+
+    return (
+        <>
+            start value = {startValue}
+            value: {value}
+            <button onClick={clickOnInc}>+</button>
+            <button onClick={clickOnReset}>reset</button>
+        </>
+    );
 }
 
 export default App;
