@@ -1,28 +1,45 @@
 import React, {useState} from 'react';
-import logo from './logo.svg';
-import './App.css';
+import {ReusedButton} from "./ReusedButton";
+import {ReusedInput} from "./ReusedInput";
+import s from './App.module.css'
+
+
+
 
 function App() {
-    const startValue = 5
-    const maxValue = 10
-    const [value, setValue] = useState(startValue)
+    const [startValue, setStartValue] = useState(0)
+    const [maxValue, setMaxValue] = useState(0)
+    const [mainScreen, setMainScreen] = useState(startValue)
 
-    const clickOnInc = () => {
-        if (value + 1 >= maxValue) {
-            return alert('error')
+    const changeMaxValue = (inputValue:string)=> setMaxValue(+inputValue)
+
+    const changeStartValue = (inputValue:string)=> {
+        if (+inputValue>=0) {
+            setStartValue(+inputValue)
         }
-        setValue(value + 1)
     }
-    const clickOnReset = () => {
-        setValue(startValue)
+
+    const increment =() => {
+        if (mainScreen<maxValue) {
+            setMainScreen(mainScreen + 1)
+        }
     }
+    const reset =() => setMainScreen(startValue)
+    const set = ()=> setMainScreen(startValue)
 
     return (
         <>
-            start value = {startValue}
-            value: {value}
-            <button onClick={clickOnInc}>+</button>
-            <button onClick={clickOnReset}>reset</button>
+            {/*main screen*/}
+            <div className={s.mainScreen}>{mainScreen}</div>
+
+             <ReusedInput value={maxValue} title={'max value'} callback={changeMaxValue}/>{/*max value */}
+             <ReusedInput  value={startValue} title={'start value'} callback={changeStartValue}/> {/*start value */}
+            <div>
+                <ReusedButton  title={'SET'} callback={set}/> {/*SET */}
+                <ReusedButton  title={'INC'} callback={increment}/> {/*INC */}
+                <ReusedButton  title={'RESET'} callback={reset}/> {/*RESET */}
+            </div>
+
         </>
     );
 }
