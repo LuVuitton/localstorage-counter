@@ -2,42 +2,96 @@ import React, {useState} from 'react';
 import {ReusedButton} from "./ReusedButton";
 import {ReusedInput} from "./ReusedInput";
 import s from './App.module.css'
+import {MainScreen} from "./MainScreen";
 
 
+type dataButtonType = {
+    title: string,
+    disable: boolean
+}
 
+const buttons = [
+    {title: 'SET', disable: false},
+    {title: 'INC', disable: true},
+    {title: 'RESET', disable: true},
+]
+
+export type screenModeType = 'incorrect value'|'enter value and press set'|'screen value'
 
 function App() {
+
+
     const [startValue, setStartValue] = useState(0)
     const [maxValue, setMaxValue] = useState(0)
-    const [mainScreen, setMainScreen] = useState(startValue)
+    const [screenValue, setScreenValue] = useState(startValue)
+    const [screenMode, setScreenMode] = useState<screenModeType>('enter value and press set')
+    const [dataButton, setDataButton] = useState<Array<dataButtonType>>(buttons)
 
-    const changeMaxValue = (inputValue:string)=> setMaxValue(+inputValue)
 
-    const changeStartValue = (inputValue:string)=> {
-        if (+inputValue>=0) {
-            setStartValue(+inputValue)
+
+    const changeMaxValue = (inputValue: number) => {
+        setDataButton(dataButton.map(e => {
+            return e.title === 'SET' ? {...e, disable: false} :
+                e.title === 'RESET' ? {...e, disable: true} :
+                    e.title === 'INC' ? {...e, disable: true} : e
+        }))
+        setScreenMode('enter value and press set')
+        if (inputValue >= 0) {
+            setMaxValue(inputValue)
+        }
+    }
+    const changeStartValue = (inputValue: number) => {
+        setDataButton(dataButton.map(e => {
+            return e.title === 'SET' ? {...e, disable: false} :
+                e.title === 'RESET' ? {...e, disable: true} :
+                    e.title === 'INC' ? {...e, disable: true} : e
+        }))
+        setScreenMode('enter value and press set')
+        if (inputValue >= 0) {
+            setStartValue(inputValue)
         }
     }
 
-    const increment =() => {
-        if (mainScreen<maxValue) {
-            setMainScreen(mainScreen + 1)
+    const increment = () => {
+        if (screenValue < maxValue) {
+            setScreenValue(screenValue + 1)
+            setDataButton(dataButton.map(e => e.title === 'RESET' ? {...e, disable: false} : e))
         }
     }
-    const reset =() => setMainScreen(startValue)
-    const set = ()=> setMainScreen(startValue)
+    const reset = () => {
+        setDataButton(dataButton.map(e => e.title === 'RESET' ? {...e, disable: true} : e))
+        setScreenValue(startValue)
+    }
+    const set = () => {
+        setDataButton(dataButton.map(e => {
+            return e.title === 'SET' ? {...e, disable: true} :
+                e.title === 'INC' ? {...e, disable: false} : e
+        }))
+        setScreenMode('screen value')
+        setScreenValue(startValue)
+    }
+
 
     return (
         <>
-            {/*main screen*/}
-            <div className={s.mainScreen}>{mainScreen}</div>
 
-             <ReusedInput value={maxValue} title={'max value'} callback={changeMaxValue}/>{/*max value */}
-             <ReusedInput  value={startValue} title={'start value'} callback={changeStartValue}/> {/*start value */}
+            <MainScreen screenValue={screenValue} screenMode={screenMode}/>
+
+            <ReusedInput value={maxValue} title={'max value'} callback={changeMaxValue}/>{/*max value */}
+            <ReusedInput value={startValue} title={'start value'} callback={changeStartValue}/> {/*start value */}
             <div>
-                <ReusedButton  title={'SET'} callback={set}/> {/*SET */}
-                <ReusedButton  title={'INC'} callback={increment}/> {/*INC */}
-                <ReusedButton  title={'RESET'} callback={reset}/> {/*RESET */}
+                <ReusedButton
+                    title={dataButton[0].title}
+                    callback={set}
+                    disable={dataButton[0].disable}/> {/*SET */}
+                <ReusedButton
+                    title={dataButton[1].title}
+                    callback={increment}
+                    disable={dataButton[1].disable}/> {/*INC */}
+                <ReusedButton
+                    title={dataButton[2].title}
+                    callback={reset}
+                    disable={dataButton[2].disable}/> {/*RESET */}
             </div>
 
         </>

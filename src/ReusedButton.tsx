@@ -3,7 +3,8 @@ import s from './ReusedButton.module.css'
 
 type PropsType = {
     title: string,
-    callback: () => void
+    callback: () => void,
+    disable: boolean
 }
 export const ReusedButton = (props: PropsType) => {
 
@@ -15,7 +16,7 @@ export const ReusedButton = (props: PropsType) => {
     return (
         <div className={s.wrapper}>
 
-            <button
+            <button disabled={props.disable}
                 onClick={onCLickHandler}>{props.title}
             </button>
 

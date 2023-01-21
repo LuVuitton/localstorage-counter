@@ -4,12 +4,12 @@ import s from './ReusedInput.module.css'
 type PropsType ={
     value: number
     title:string,
-    callback:(inputValue:string)=>void
+    callback:(inputValue:number)=>void
 }
 export const ReusedInput = (props:PropsType) => {
 
     const onchangeHandler = (e:ChangeEvent<HTMLInputElement>)=> {
-        props.callback(e.currentTarget.value)
+        props.callback(e.currentTarget.valueAsNumber)
     }
 
 
