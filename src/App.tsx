@@ -1,7 +1,6 @@
 import React, {useState} from 'react';
 import {ReusedButton} from "./ReusedButton";
 import {ReusedInput} from "./ReusedInput";
-import s from './App.module.css'
 import {MainScreen} from "./MainScreen";
 
 
@@ -11,12 +10,12 @@ type dataButtonType = {
 }
 
 const buttons = [
-    {title: 'SET', disable: false},
+    {title: 'SET', disable: true},
     {title: 'INC', disable: true},
     {title: 'RESET', disable: true},
 ]
 
-export type screenModeType = 'incorrect value'|'enter value and press set'|'screen value'
+export type screenModeType = 'incorrect value' | 'enter value and press set' | 'screen value'
 
 function App() {
 
@@ -28,27 +27,38 @@ function App() {
     const [dataButton, setDataButton] = useState<Array<dataButtonType>>(buttons)
 
 
-
     const changeMaxValue = (inputValue: number) => {
         setDataButton(dataButton.map(e => {
-            return e.title === 'SET' ? {...e, disable: false} :
-                e.title === 'RESET' ? {...e, disable: true} :
-                    e.title === 'INC' ? {...e, disable: true} : e
+            return e.title === 'RESET' ? {...e, disable: true} :
+                e.title === 'INC' ? {...e, disable: true} : e
         }))
-        setScreenMode('enter value and press set')
-        if (inputValue >= 0) {
+
+        if (inputValue >= 0 && inputValue > startValue) {
             setMaxValue(inputValue)
+            setScreenMode('enter value and press set')
+            setDataButton(dataButton.map(e => e.title === 'SET' ? {...e, disable: false} : e))
+        } else if (inputValue === startValue) {
+            setMaxValue(startValue)
+            setScreenMode('incorrect value')
+            setDataButton(dataButton.map(e => e.title === 'SET' ? {...e, disable: true} : e))
+
         }
     }
     const changeStartValue = (inputValue: number) => {
+
         setDataButton(dataButton.map(e => {
-            return e.title === 'SET' ? {...e, disable: false} :
-                e.title === 'RESET' ? {...e, disable: true} :
-                    e.title === 'INC' ? {...e, disable: true} : e
+            return e.title === 'RESET' ? {...e, disable: true} :
+                e.title === 'INC' ? {...e, disable: true} : e
         }))
-        setScreenMode('enter value and press set')
-        if (inputValue >= 0) {
+
+        if (inputValue >= 0 && inputValue < maxValue) {
             setStartValue(inputValue)
+            setScreenMode('enter value and press set')//дизейблим кнопки
+            setDataButton(dataButton.map(e => e.title === 'SET' ? {...e, disable: false} : e))
+        } else if (inputValue === maxValue) {
+            setStartValue(maxValue)
+            setScreenMode('incorrect value')
+            setDataButton(dataButton.map(e => e.title === 'SET' ? {...e, disable: true} : e))
         }
     }
 
