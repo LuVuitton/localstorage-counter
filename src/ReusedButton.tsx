@@ -11,12 +11,14 @@ export const ReusedButton = (props: PropsType) => {
     const onCLickHandler = () => {
       props.callback()
     }
-
+    // class="button-86" role="button"
 
     return (
-        <div className={s.wrapper}>
+        <div className={s.reusButtonWrapper}>
 
-            <button disabled={props.disable}
+            <button
+                className={s.reusButton}
+                disabled={props.disable}
                 onClick={onCLickHandler}>{props.title}
             </button>
 

@@ -14,9 +14,10 @@ export const ReusedInput = (props:PropsType) => {
 
 
     return (
-        <div className={s.wrapper}>
+        <div className={s.reusInputWrapper}>
             { props.title}
                 <input
+                    className={s.reusInput}
                     value={props.value}
                     type='number'
                     onChange={onchangeHandler}></input>
