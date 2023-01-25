@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {ReusedButton} from "./ReusedButton";
 import {ReusedInput} from "./ReusedInput";
 import {MainScreen} from "./MainScreen";
@@ -7,7 +7,7 @@ import s from './App.module.css'
 
 
 type dataButtonType = {
-    title: 'SET' | 'INC' | 'RESET',
+    title: 'SET' | 'INC' | 'RESET' | 'Clear LS',
     disable: boolean
     id: string
 }
@@ -34,6 +34,11 @@ function App() {
             disable: true,
             id: v1(),
         },
+        {
+            title: 'Clear LS',
+            disable: false,
+            id: v1(),
+        },
     ]
 
     const [startValue, setStartValue] = useState(0)
@@ -42,9 +47,25 @@ function App() {
     const [screenMode, setScreenMode] = useState<screenModeType>('enter value and press set')
     const [dataButton, setDataButton] = useState<Array<dataButtonType>>(buttons)
 
+    useEffect(()=> {
+        const startValueLS = localStorage.getItem('startValue')
+        const maxValueLS = localStorage.getItem('maxValue')
+
+        if(startValueLS && maxValueLS) {
+            setStartValue(JSON.parse(startValueLS))
+            setMaxValue(JSON.parse(maxValueLS))
+            setScreenValue(JSON.parse(startValueLS))
+            setScreenMode('screen value')
+            setDataButton(dataButton.map(e => {
+                return e.title === 'INC' ? {...e, disable: false} : e
+            }))
+        }
+
+    }, [])
+
 
     const changeMaxValue = (inputValue: number) => {
-        if (inputValue >= 0 && inputValue > startValue) {
+        if (inputValue >= 0 && inputValue > startValue && startValue !== -1) {
             setMaxValue(inputValue)
             setScreenMode('enter value and press set')
             setDataButton(dataButton.map(e => e.title === 'SET' ? {...e, disable: false}
@@ -70,20 +91,25 @@ function App() {
             setStartValue(maxValue)
             setScreenMode('incorrect value')
             setDataButton(dataButton.map(e => e.title === 'SET' ? {...e, disable: true} : e))
+        } else if (inputValue < 0) {
+            setStartValue(-1)
+            setScreenMode('incorrect value')
+            setDataButton(dataButton.map(e => e.title === 'SET' ? {...e, disable: true} : e))
         }
     }
 
     const increment = () => {
-        if (screenValue < maxValue) {
+        if (screenValue === maxValue - 1) { //   что бы не позволял нажать когда равны
+            setScreenValue(maxValue)
+            setDataButton(dataButton.map(e => e.title === 'INC' ? {...e, disable: true} : e))
+        } else if (screenValue < maxValue) {
             setScreenValue(screenValue + 1)
             setDataButton(dataButton.map(e => e.title === 'RESET' ? {...e, disable: false} : e))
-        } else if (screenValue === maxValue) {
-            setScreenValue(maxValue)
-            setDataButton(dataButton.map(e => e.title === 'INC' ? {...e, disable: true} : e)) //////шо ж делать
         }
     }
     const reset = () => {
-        setDataButton(dataButton.map(e => e.title === 'RESET' ? {...e, disable: true} : e))
+        setDataButton(dataButton.map(e => e.title === 'RESET' ? {...e, disable: true} :
+            e.title === 'INC' ? {...e, disable: false} :e))
         setScreenValue(startValue)
     }
     const set = () => {
@@ -93,7 +119,20 @@ function App() {
         }))
         setScreenMode('screen value')
         setScreenValue(startValue)
+        localStorage.setItem('startValue',JSON.stringify(startValue))
+        localStorage.setItem('maxValue',JSON.stringify(maxValue))
     }
+    const clearLS = () => {
+        localStorage.clear()
+        setScreenValue(0)
+        setStartValue(0)
+        setMaxValue(0)
+        setScreenMode('screen value')
+    }
+
+
+
+
 
 
     return (
@@ -108,11 +147,12 @@ function App() {
             <div className={s.buttonsWrapper}>
                 {dataButton.map(e => (<ReusedButton
                     title={e.title}
-                    callback={e.title === 'SET' ? set : e.title === 'INC' ? increment : reset}
+                    callback={e.title === 'SET' ? set : e.title === 'INC' ? increment :e.title === 'RESET' ? reset : clearLS}
                     disable={e.disable}
                     key={e.id}
                 />))}
             </div>
+
         </>
     );
 }
